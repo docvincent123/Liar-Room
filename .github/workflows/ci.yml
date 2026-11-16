@@ -38,9 +38,9 @@ jobs:
       - name: Start production and verify HTTP entrypoints
         shell: bash
         run: |
-          npm start > /tmp/liar-room.log 2>&1 &
+          NODE_ENV=production node server/index.mjs > /tmp/liar-room.log 2>&1 &
           GAME_PID=$!
-          trap 'kill "$GAME_PID" 2>/dev/null || true' EXIT
+          trap 'kill "$GAME_PID" 2>/dev/null || true; wait "$GAME_PID" 2>/dev/null || true' EXIT
           for i in {1..30}; do
             if curl -fsS http://localhost:3000/healthz; then break; fi
             sleep 1

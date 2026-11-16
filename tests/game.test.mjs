@@ -76,12 +76,12 @@ test('timer handles incomplete hints and unattended host, awarding liar once',()
  assert.equal(s.phase,'guess');assert.equal(tick(s,211000),true);assert.equal(s.phase,'reveal');
  assert.equal(s.players[1].score,150);assert.equal(tick(s,999999),false);assert.equal(s.players[1].score,150);
 });
-test('five rounds only; repeated topic puzzle only after deck exhaustion',()=>{
+test('five rounds only; no topic puzzle repeats within the match',()=>{
  const s=room();
  for(let n=0;n<5;n++){
   startRound(s,'host',online,1000,()=>0);guess(s);resolveRound(s,'host',riddles.find(q=>q.id===s.puzzleId).answer,s.liarId,1200);
  }
- assert.equal(new Set(s.used.slice(0,4)).size,4);assert.equal(s.round,5);
+ assert.equal(new Set(s.used).size,5);assert.equal(s.round,5);
  assert.throws(()=>startRound(s,'host',online,1000,()=>0));
 });
 test('practice fills hints using bots and advances immediately',()=>{

@@ -25,7 +25,7 @@ export function startRound(room,actor,online,now=Date.now(),choose=n=>Math.floor
  ensure(room.players.length===6,'Потрібні ведучий і п’ятеро гравців');
  ensure(room.players.every(p=>p.bot||online.includes(p.id)),'Дочекайтеся повернення всіх гравців');
  const pool=riddles.filter(q=>(room.theme==='mixed'||q.theme===room.theme)&&!room.used.includes(q.id));
- // Single-topic decks contain 4 puzzles: reuse only after exhausting the deck.
+ // A topic has five puzzles, enough for a full match without repeats.
  const candidates=pool.length?pool:riddles.filter(q=>room.theme==='mixed'||q.theme===room.theme);
  const puzzle=candidates[choose(candidates.length)];
  const viewers=room.players.filter(p=>p.id!==room.hostId);
