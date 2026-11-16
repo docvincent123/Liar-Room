@@ -54,16 +54,19 @@ test('3D demo cards flip, pointer tilt resets, and friends seats open an invitat
  await page.goto('/');
  const card=page.getByRole('button',{name:'Демонстраційна картка Лис',exact:true});
  await expect(card).toHaveAttribute('aria-pressed','false');
- await card.hover();
+ const center=page.getByRole('button',{name:'Демонстраційна картка Кіт',exact:true});
+ await center.hover();
  await page.mouse.move(10,10);
- await card.click();
+ await expect(center).toHaveCSS('--rx','0deg');
+ const turn=page.getByRole('button',{name:'Перевернути карту Лис',exact:true});
+ await turn.click();
  await expect(card).toHaveAttribute('aria-pressed','true');
  await expect(card.locator('.card-identity')).toHaveAttribute('aria-hidden','false');
  await expect(card.locator('.identity-title')).toHaveText('БРЕХУН');
  await expect(card.locator('.card-rotor')).toHaveCSS('transform-style','preserve-3d');
  await page.waitForTimeout(750);
  await page.screenshot({path:testInfo.outputPath('07-flipped-deck.png'),fullPage:true});
- await card.click();
+ await turn.click();
  await expect(card).toHaveAttribute('aria-pressed','false');
  await page.getByRole('button',{name:'Друзі',exact:true}).click();
  await expect(page.locator('.seat-card')).toHaveCount(6);
@@ -76,7 +79,8 @@ test('3D demo cards flip, pointer tilt resets, and friends seats open an invitat
  await page.screenshot({path:testInfo.outputPath('09-friends-mobile.png'),fullPage:true});
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.getByRole('button',{name:'Головна',exact:true}).click();
- await card.click();
+ await page.getByRole('button',{name:'Перевернути карту Лис',exact:true}).focus();
+ await page.keyboard.press('Enter');
  await expect(card).toHaveAttribute('aria-pressed','true');
 });
 
