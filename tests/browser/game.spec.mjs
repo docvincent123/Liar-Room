@@ -79,3 +79,40 @@ test('3D demo cards flip, pointer tilt resets, and friends seats open an invitat
  await card.click();
  await expect(card).toHaveAttribute('aria-pressed','true');
 });
+
+test('human role card flips privately and removes secret text when hidden',async({page},testInfo)=>{
+ const {io}=await import('socket.io-client');
+ const peers=[];
+ async function connectPeer(){
+  const peer=io('http://localhost:3000',{transports:['websocket'],forceNew:true,autoConnect:false});
+  peers.push(peer);await new Promise((resolve,reject)=>{peer.once('connect',resolve);peer.once('connect_error',reject);peer.connect();});return peer;
+ }
+ const emit=(peer,event,data)=>peer.timeout(5000).emitWithAck(event,data??{});
+ try{
+  const host=await connectPeer();
+  const created=await emit(host,'room:create',{name:'Ведучий тесту',theme:'mixed'});
+  expect(created.ok).toBe(true);
+  for(let n=0;n<4;n++){
+   const peer=await connectPeer();
+   expect((await emit(peer,'room:join',{name:'Друг '+n,code:created.code})).ok).toBe(true);
+  }
+  await page.goto('/?room='+created.code);
+  await page.getByLabel('Твій нік').fill('Гравець браузера');
+  await page.getByRole('button',{name:'Приєднатися →',exact:true}).click();
+  await expect(page.locator('.seat-card')).toHaveCount(6);
+  expect((await emit(host,'round:start')).ok).toBe(true);
+  const show=page.getByRole('button',{name:'Показати роль',exact:true});
+  await expect(show).toBeVisible();
+  await expect(page.locator('.role-front strong')).toHaveCount(0);
+  await show.click();
+  await expect(page.getByRole('button',{name:'Сховати роль',exact:true})).toHaveAttribute('aria-expanded','true');
+  await expect(page.locator('.role-front strong')).toHaveCount(1);
+  await page.waitForTimeout(750);
+  await page.screenshot({path:testInfo.outputPath('10-private-role.png'),fullPage:true});
+  await page.getByRole('button',{name:'Сховати роль',exact:true}).click();
+  await expect(page.locator('.role-front strong')).toHaveCount(0);
+  await page.getByLabel('Твоя підказка',{exact:true}).fill('Це моя обережна підказка');
+  await page.getByRole('button',{name:'Надіслати ↗',exact:true}).click();
+  await expect(page.getByText('Твою підказку прийнято:',{exact:false})).toBeVisible();
+ }finally{for(const peer of peers)peer.disconnect();}
+});
