@@ -112,7 +112,7 @@ export default function Home(){
    <a className="brand" href="/" onClick={e=>{e.preventDefault();setTab('home');}} aria-label="LIAR ROOM — головна"><span className="brand-icon">◈</span><span>LIAR<span className="brand-light">ROOM</span><small>TRUST IS A TRAP.</small></span></a>
    <div className="nav-label">ІГРОВИЙ ПРОСТІР</div>
    <nav aria-label="Головна навігація">
-    {[['home','⌂','Головна'],['play','◈','Кімната'],['themes','▦','Теми загадок'],['shop','◇','Магазин'],['rules','?','Як грати']].map(([id,icon,label])=><button key={id} className={'nav-item '+(tab===id?'active':'')} onClick={()=>{setTab(id);setError('');}}><span>{icon}</span>{label}{id==='shop'&&<small>SOON</small>}{id==='play'&&room&&<i className="dot"/>}</button>)}
+    {[['home','⌂','Головна'],['play','◈','Кімната'],['themes','▦','Теми загадок'],['shop','◇','Магазин'],['rules','?','Як грати']].map(([id,icon,label])=><button key={id} className={'nav-item '+(tab===id?'active':'')} onClick={()=>{setTab(id);setError('');}}><span aria-hidden="true">{icon}</span>{label}{id==='shop'&&<small aria-hidden="true">SOON</small>}{id==='play'&&room&&<i className="dot"/>}</button>)}
    </nav>
    <div className="sidebar-bottom"><div className="beta-card"><span>✦ НЕ ДОВІРЯЙ НАВІТЬ ДРУЗЯМ</span><p>Найкраща брехня звучить як хороша підказка.</p><button onClick={()=>setTab('rules')}>Зрозуміти правила ↗</button></div><span className="made-by">LEMVORILAB <b>×</b> PARTY GAMES</span><small className="version">MVP 0.1 · Українська</small></div>
   </aside>

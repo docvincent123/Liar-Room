@@ -25,6 +25,7 @@ jobs:
     env:
       DATABASE_URL: postgres://liar:ci-only-password@localhost:5432/liar_test
       NEXT_TELEMETRY_DISABLED: 1
+      APP_ORIGIN: http://localhost:3000
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -44,7 +45,7 @@ jobs:
             if curl -fsS http://localhost:3000/healthz; then break; fi
             sleep 1
           done
-          curl -fsS http://localhost:3000/healthz
+          if ! curl -fsS http://localhost:3000/healthz; then cat /tmp/liar-room.log; exit 1; fi
           curl -fsS http://localhost:3000/ > /tmp/liar-room.html
           node --input-type=module -e "import fs from 'node:fs'; import assert from 'node:assert/strict'; const html=fs.readFileSync('/tmp/liar-room.html','utf8'); assert.ok(html.includes('LIAR')); assert.ok(html.includes('ОДИН БРЕШЕ'));"
           curl -fsS http://localhost:3000/api/catalog
