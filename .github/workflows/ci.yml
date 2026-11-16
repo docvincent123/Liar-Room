@@ -48,6 +48,17 @@ jobs:
           curl -fsS http://localhost:3000/ > /tmp/liar-room.html
           node --input-type=module -e "import fs from 'node:fs'; import assert from 'node:assert/strict'; const html=fs.readFileSync('/tmp/liar-room.html','utf8'); assert.ok(html.includes('LIAR')); assert.ok(html.includes('ОДИН БРЕШЕ'));"
           curl -fsS http://localhost:3000/api/catalog
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      - name: Upload browser screenshots and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-review
+          path: |
+            test-results/
+            playwright-report/
       - name: Upload resolved dependency lock and production logs
         if: always()
         uses: actions/upload-artifact@v4

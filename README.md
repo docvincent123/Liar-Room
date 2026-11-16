@@ -70,6 +70,8 @@ npm run dev
 npm test
 DATABASE_URL=postgres://liar:password@localhost:5432/liar_test npm run test:integration
 npm run build
+npx playwright install chromium
+npm run test:browser
 npm start
 ```
 
@@ -114,7 +116,7 @@ npm start
 
 ## Перевірки
 
-GitHub Actions запускає unit-тести, інтеграційні тести на PostgreSQL із реальними Socket.IO клієнтами, production build та HTTP smoke-check. Перевіряються приховані ролі, серверні обмеження, гонка підказок, очки без повторного нарахування, перепідключення, відновлення після перезапуску, вилучення гравця та відхилення чужого Origin.
+GitHub Actions запускає unit-тести, інтеграційні тести на PostgreSQL із реальними Socket.IO клієнтами, production build, HTTP smoke-check та Chromium-перевірки інтерфейсу на desktop/mobile. Скриншоти й trace доступні в артефакті browser-review. Перевіряються приховані ролі, серверні обмеження, гонка підказок, очки без повторного нарахування, перепідключення, відновлення після перезапуску, вилучення гравця та відхилення чужого Origin.
 
 Проходження CI не замінює ручну перевірку в браузері на desktop і mobile. Статус конкретного запуску дивись у вкладці Actions.
 
