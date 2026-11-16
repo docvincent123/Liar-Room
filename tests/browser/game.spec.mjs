@@ -49,3 +49,33 @@ test('mobile layout, modal keyboard and no horizontal overflow',async({page},tes
  await page.keyboard.press('Escape');
  await expect(page.getByRole('dialog')).toHaveCount(0);
 });
+
+test('3D demo cards flip, pointer tilt resets, and friends seats open an invitation',async({page},testInfo)=>{
+ await page.goto('/');
+ const card=page.getByRole('button',{name:'Демонстраційна картка Лис',exact:true});
+ await expect(card).toHaveAttribute('aria-pressed','false');
+ await card.hover();
+ await page.mouse.move(10,10);
+ await card.click();
+ await expect(card).toHaveAttribute('aria-pressed','true');
+ await expect(card.locator('.card-identity')).toHaveAttribute('aria-hidden','false');
+ await expect(card.locator('.identity-title')).toHaveText('БРЕХУН');
+ await expect(card.locator('.card-rotor')).toHaveCSS('transform-style','preserve-3d');
+ await page.waitForTimeout(750);
+ await page.screenshot({path:testInfo.outputPath('07-flipped-deck.png'),fullPage:true});
+ await card.click();
+ await expect(card).toHaveAttribute('aria-pressed','false');
+ await page.getByRole('button',{name:'Друзі',exact:true}).click();
+ await expect(page.locator('.seat-card')).toHaveCount(6);
+ await page.screenshot({path:testInfo.outputPath('08-friends.png'),fullPage:true});
+ await page.getByRole('button',{name:'Запросити друга на місце 1',exact:true}).click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.keyboard.press('Escape');
+ await page.setViewportSize({width:375,height:812});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+ await page.screenshot({path:testInfo.outputPath('09-friends-mobile.png'),fullPage:true});
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.getByRole('button',{name:'Головна',exact:true}).click();
+ await card.click();
+ await expect(card).toHaveAttribute('aria-pressed','true');
+});
